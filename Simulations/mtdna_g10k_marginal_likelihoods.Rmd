@@ -1,0 +1,197 @@
+---
+title: "mtdna_marginal_likelihood_g10k_stepping-stone"
+author: "Eric Crandall"
+date: "November 4, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width = 100)
+library(reshape2)
+library(plyr)
+library(RColorBrewer)
+library(ggplot2)
+source("/Users/eric/github/ibdsims/migrate_harvester_functions.R")
+models<-c("10stepping.stone","10stepping.stone1","5stepping.stone","5stepping.stone1","10island","5island","panmixia")
+```
+
+
+
+## Migrate results for datasets simulated with a growth phase 10,000 generations in the past
+
+### Replicates 1 of mtDNA panmixia with Ne=1,000,000
+```{r mtdna_panmixia, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_singlepop_g10k"
+bflist_singlepop<-list()
+for(rep in 1:10){
+  wd2<-file.path(wd,paste("simrep",rep,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bfsum2<-bfcalcs_reps(bftable, models=models, reps=3) 
+  bflist_singlepop[rep]<-bfsum2[1]
+  print("Final Result - 3 reps") 
+  print(rep)
+  print(bfsum2)
+}
+```
+
+
+### Replicates of mtDNA stepping stone model with m=0.1 and Ne = 10,000 Nm=1,000
+```{r nl4_m0.1, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl4_m0.1"
+bflist_g10k_nl4_m0.1<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl4_m0.1[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.01 and Ne = 10,000 (Nm=100)
+```{r nl4_m0.01, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl4_m0.01"
+bflist_g10k_nl4_m0.01<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl4_m0.01[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.001 and Ne = 10,000 (Nm=10)
+```{r nl4_m0.001, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl4_m0.001"
+bflist_g10k_nl4_m0.001<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl4_m0.001[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+
+### Replicates of mtDNA stepping stone model with m=0.01 and Ne = 100,000 (Nm=1,000)
+```{r nl5_m0.01, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl5_m0.01"
+bflist_g10k_nl5_m0.01<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl5_m0.01[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.001 and Ne = 100,000 (Nm=100)
+```{r nl5_m0.001, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl5_m0.001"
+bflist_g10k_nl5_m0.001<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl5_m0.001[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.0001 and Ne = 100,000 (Nm=10)
+```{r nl5_m0.0001, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl5_m0.0001"
+bflist_g10k_nl5_m0.0001<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl5_m0.0001[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.001 and Ne = 1,000,000 (Nm=1,000)
+```{r nl6_m0.001, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl6_m0.001"
+bflist_g10k_nl6_m0.001<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl6_m0.001[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.0001 and Ne = 1,000,000 (Nm=100)
+```{r nl6_m0.0001, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl6_m0.0001"
+bflist_g10k_nl6_m0.0001<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl6_m0.0001[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Replicates of mtDNA stepping stone model with m=0.00001 and Ne = 1,000,000 (Nm=10)
+```{r nl6_m0.00001, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl6_m0.00001"
+bflist_g10k_nl6_m0.00001<-list()
+for(r in 1:10){
+  wd2<-file.path(wd,paste("simrep",r,sep=""))
+  marglikes<-migrate_harvester(wd=wd2,models=models,multilocus = F,quiet = T)
+  bftable<-lapply(marglikes,bfcalcs,ml="bezier.corrected")
+  bflist_g10k_nl6_m0.00001[r]<-bftable
+  print(r)
+  print(bftable)
+}
+```
+
+### Taking the means of the model probabilities across replicates
+
+```{r modelprobs}
+
+finalprobs<-data.frame(models)
+for(sim in ls(pattern="bflist")){
+  # this takes each of those lists and gets the model probabilities out for each model
+  probs<-matrix(as.numeric(laply(get(sim), as.matrix)[,,7]),nrow=10)
+  # take the mean model probability for each model
+  probs2<-data.frame(apply(probs,2,mean))
+  finalprobs<-cbind(finalprobs,probs2)
+}
+names(finalprobs)<-c("models",ls(pattern="bflist"))
+
+longprobs<-melt(finalprobs,id.vars = "models",variable.name = "Simulation",value.name="Model Probability")
+
+longprobs$models<-factor(longprobs$models, levels=models)
+
+longprobs$Simulation<-factor(longprobs$Simulation, levels=c("bflist_g10k_nl4_m0.001","bflist_g10k_nl5_m0.0001","bflist_g10k_nl6_m0.00001","bflist_g10k_nl4_m0.01","bflist_g10k_nl5_m0.001","bflist_g10k_nl6_m0.0001","bflist_g10k_nl4_m0.1","bflist_g10k_nl5_m0.01","bflist_g10k_nl6_m0.001","bflist_singlepop"),labels=c("Ne = 10,000\nm = 0.001","Ne = 100,000\nm = 0.0001","Ne = 1,000,000\nm = 0.00001","Ne = 10,000\nm = 0.01","Ne = 100,000\nm = 0.001","Ne = 1,000,000\nm = 0.0001","Ne = 10,000\nm = 0.1","Ne = 100,000\nm=0.01","Ne = 1,000,000\nm = 0.001","Ne = 1,000,000\nPanmixia"))
+
+my.cols<-brewer.pal(7,"RdYlBu")
+my.cols[7]<-"#7f7f7f"
+ggplot(data=longprobs,aes(x=Simulation,y=`Model Probability`)) + geom_bar(stat="identity",aes(fill=models)) + scale_fill_manual(values = my.cols, labels=c("k=10 Stepping-Stone, 28 parameter","k=10 Stepping-Stone, 2 parameter","k=5 Stepping-Stone, 13 parameter","k=5 Stepping-Stone, 2 parameter","k=10 Island, 2 parameter","k=5 Island, 2 parameter","k=1 Panmixia"),guide = guide_legend(title = "Migrate Models")) + theme(axis.title.x=element_blank(), legend.text=element_text(size=15), legend.title=element_text(size=18), axis.text.y=element_text(size=14), axis.title.y=element_text(size=14))
+
+```
+```{r}
+countmodel<-function(x){
+  x[x$choice==1,1]
+}
+lapply(X = bflist_g10k_nl4_m0.001,countmodel)
+```

@@ -1,0 +1,188 @@
+---
+title: "Migrate_parameters"
+author: "Eric Crandall"
+date: "10/28/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(coda)
+library(ggplot2)
+library(ggmcmc)
+library(gridExtra)
+library(reshape2)
+source("/Users/eric/github/ibdsims/migrate_harvester_functions.R")
+models<-c("panmixia","5island","5stepping.stone","5stepping.stone1","10island","10stepping.stone","10stepping.stone1")
+```
+
+
+```{r, echo=F}
+wd<-"/Users/eric/Datasets/simulations/ibdsim/migrate_mtdna_g10k_nl4_m0.01"
+setwd(wd)
+bestmodel<-"10stepping.stone1"
+all_nm<-list()
+all_ne<-list()
+allstatstable<-list()
+
+for(f in list.files()){ #f<-"simrep1"
+  print(f)
+  #move into the bestmodel directory
+  wd2<-file.path(wd,f,"rep1",bestmodel)
+  setwd(wd2)
+  
+  # Load the bayesallfile
+  print("loading bayesallfile")
+  data<-read.table("bayesallfile", header=T) #this may take a minute or two
+
+  # Split the whole list into the individual replicates, so that you will
+  # have a list of data frames
+  data.list<-split(data,data$Replicate)
+  
+  # Subset the parameters of interest, either by rows or by columns to remove uninteresting columns
+  
+  #data.list.1<-lapply(data.list,subset,subset=Steps>(0.4*max(data.list[[1]]$Steps)))# by rows. Removing burnin. First 40% First 20,000 samples out of 50,000 or 10 million steps out of 25 million
+  
+  data.list.1<-lapply(data.list,subset,select=c(10:(length(data.list[[1]])-8))) #by columns.
+  
+  # calculate Nm for each row
+  data.list.2<-lapply(data.list.1,migrants.per.gen)
+  
+  # calculate Ne for each row given a certain mu
+  data.list.2<-lapply(data.list.2,NeGivenMu,mu=1e-7)
+  
+  #convert each dataframe to an mcmc object and then convert the whole thing to an mcmc list
+  data.list.3<-mcmc.list(lapply(data.list.2,mcmc))
+  
+  #condense everything into a single mcmc replicate for the purposes of HPDinterval
+  data.list.allinone<-mcmc(data=do.call("rbind",data.list.2))
+  
+  #calculate statistics
+  print("calculating statistics")
+  summ<-summary(data.list.3)
+  ess<-effectiveSize(data.list.3)
+  gelman<-gelman.diag(data.list.3,multivariate=F)
+  HPD<-HPDinterval(data.list.allinone)
+  
+  #cat the stats, man
+  allstats<-cbind(summ$statistics[,1:2],HPD,ess,gelman$psrf)
+  allstatstable[[f]]<-allstats
+
+  #write the stats into the directory for future reference
+  write.csv(allstats,"codastats.csv")
+  
+  if(bestmodel=="panmixia"){next}
+  
+   #set aside Nm and Ne for violin plots
+  nmlist<-lapply(data.list.2,subset,select=c(which(grepl("Nm",names(data.list.2[[1]])))))
+  nmlistallinone<-data.frame(data=do.call("rbind",nmlist))
+  names(nmlistallinone)<-f
+  all_nm[[f]]<-nmlistallinone
+  
+  nelist<-lapply(data.list.2,subset,select=c(which(grepl("Ne",names(data.list.2[[1]])))))
+  nelistallinone<-data.frame(data=do.call("rbind",nelist))
+  names(nelistallinone)<-f
+  all_ne[[f]]<-nelistallinone
+  
+  #create plots of for visual evaluation
+  print("plotting MCMC")
+  data.list.2<-lapply(data.list.2,subset,select=c(which(grepl("Theta_",names(data.list.2[[1]])) | grepl("M_",names(data.list.2[[1]])) | grepl("Nm_",names(data.list.2[[1]])) |grepl("Ne_",names(data.list.2[[1]])) |grepl("lnPost",names(data.list.2[[1]])))))
+  #log transform them, since they come from an exponential prior
+  data.list.2l<-lapply(data.list.2,log)
+  data.list.3<-mcmc.list(lapply(data.list.2l,mcmc))
+  
+  #Nmnames<-grep(pattern="Nm",varnames(data.list.3),value = T)
+  data.list.gg<-ggs(data.list.3,burnin=F,description=paste(f,bestmodel,sep="_"))
+  ggmcmc(data.list.gg,plot=c("ggs_traceplot","ggs_density","ggs_Rhat",simplify_traceplot=25),file=paste(wd2,"/",paste(f,bestmodel,sep="_"),".pdf",sep=""))
+  
+  
+  cat("\n","done","next",sep="\n\n")
+}
+```
+
+```{r violinplots, echo=F}
+setwd(wd)
+ #make a violin plot of Nm in ggplot2!
+ all_nm<-as.data.frame(all_nm)
+  longNm <- melt(data = all_nm,
+                 measure.vars = names(all_nm),
+                 variable.name = "Parameter",
+                 value.name = "Nm"
+  )
+ violin_nm<-ggplot(longNm, (aes(x=Parameter, y=Nm))) + geom_violin()  + 
+    scale_y_log10(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1,10,100,1000,10000,100000), limits=c(1,100), labels=c("0.00001","0.0001","0.001","0.01","0.1","1","10","100","1,000","10,000","100,000")) +
+    labs(title=element_blank(), x="Parameter", y="Effective Female Migrants per Generation") + coord_flip()
+violin_nm
+ 
+  pdf(file="Nm_violin.pdf", width=8.5, height=11, paper="letter") 
+ print(violin_nm)
+ dev.off()
+ 
+ #make a violin plot of Ne in ggplot2!
+  all_ne<-as.data.frame(all_ne)
+  longNe <- melt(data = all_ne,
+                 measure.vars = names(all_ne),
+                 variable.name = "Parameter",
+                 value.name = "Ne"
+  )
+ violin_ne<-ggplot(longNe, (aes(x=Parameter, y=Ne))) + geom_violin()  + 
+    scale_y_log10(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1,10,100,1000,10000,100000),limits=c(1000,1000000), labels=c("0.00001","0.0001","0.001","0.01","0.1","1","10","100","1,000","10,000","100,000")) +
+    labs(title=element_blank(), x="Parameter", y="Effective Population Size") + coord_flip()
+ violin_ne
+ 
+ 
+ pdf(file="Ne_violin.pdf", width=8.5, height=11, paper="letter") 
+ print(violin_ne)
+ dev.off()
+```
+
+ 
+
+
+#save(allstatstable,file="nl5_g25k_m0.001_bestmodel_stats_v.Rdata")
+sink(file="nl5_g25k_m0.001_bestmodel_stats.txt",type="output")
+allstatstable
+sink()
+
+##OK, now I'm going to try to plot the stats in ggplot2
+
+#for(species in names(allstatstable)){
+  
+  cat(species,"\n")
+  
+  speciesNm<-as.data.frame(allstatstable[[species]][which(grepl("Nm",rownames(allstatstable[[species]]))),])
+  speciesTheta<-as.data.frame(allstatstable[[species]][which(grepl("Theta",rownames(allstatstable[[species]]))),])
+  
+  if(length(speciesNm[1,])==1){cat("1 Nm parameter; skipping",species, "\n"); next}
+  if(length(speciesNm[,1])==0){cat("Panmixia; skipping",species, "\n");next}
+  
+  pdf(file=paste("/Users/eric/Datasets/ToBo_Project/statplots/",species,"_Nm_stats.pdf",sep=""),width=8.5, height=11, paper="letter")
+  
+  
+  nmstats<-ggplot(speciesNm) + 
+    geom_crossbar( aes(x = rownames(speciesNm), y = Mean, ymin = lower, ymax=upper, color = speciesNm[,6] < 1.2, fill= ess > 200)) + 
+    labs(title=species, x="Parameter", y="Effective Female Migrants per Generation")  + 
+    scale_y_log10(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1,10,100,1000,10000,100000), labels=c("0.00001","0.0001","0.001","0.01","0.1","1","10","100","1,000","10,000","100,000")) +
+    scale_fill_manual(values=c("black","white"))
+  
+   thetastats<-ggplot(speciesTheta) + 
+    geom_crossbar( aes(x = rownames(speciesTheta), y = Mean, ymin = lower, ymax=upper, color = speciesTheta[,6] < 1.2, fill= ess > 200)) + 
+    labs(title=species, x="Parameter", y="Effective Females x mutation rate")  + 
+    scale_y_log10(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1,10), labels=c("0.00001","0.0001","0.001","0.01","0.1","1","10")) +
+    scale_fill_manual(values=c("black","white"))
+  
+  grid.arrange(nmstats,thetastats,nrow=2)
+  
+  dev.off()
+  
+}
+
+
+
+
+ 
+
+```
+
+
+

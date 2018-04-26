@@ -1,0 +1,104 @@
+---
+title: "Multinomial Regression on Migrate Results"
+author: "Eric Crandall"
+date: "7/18/2017"
+output: 
+  html_notebook:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(nnet)
+library(knitr)
+library(MASS)
+```
+
+## Importing Data
+
+
+
+```{r import, echo=T}
+species<-read_excel(path="/Users/eric/google_drive/editing-reviewing/Hawaii_Migrate/Species_data.xlsx",sheet = 1)
+# get rid of the ambiguous cases
+species<-species[!species$Migrate_Inference=="Ambiguous",]
+# recode the stepping stone 2 parameter as stepping-stone, and put all regional structure into 1 category
+species$Migrate_Inference[which(species$Migrate_Inference=="Stepping-Stone 2 Parameter")]<-"Stepping-Stone"
+species$Migrate_Inference[which(species$Migrate_Inference=="Empirical")]<-"Regional Structure"
+species$Migrate_Inference[which(species$Migrate_Inference=="High-Low")]<-"Regional Structure"
+
+species$Tau[species$Tau=="NA"]<-NA
+species$Tau<-as.numeric(species$Tau)
+
+```
+
+## Multinomial regression
+
+### Life History Traits
+
+Following analysis demonstrated at [this](https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/) page. I want to understand what life history traits predict a particular model of gene flow.
+
+```{r, message=FALSE, warning=FALSE}
+
+# Make Stepping-stone the reference level
+species$Migrate_Inference<-as.factor(species$Migrate_Inference)
+species$Migrate_Inference<-relevel(species$Migrate_Inference, ref="Stepping-Stone")
+
+test<-multinom(Migrate_Inference ~ Log_PLD + Log_Depth_Range + Log_Length_cm  + Habitat_Specialist + Attached_Eggs + Herbivore + Fish + Endemic, data=species)
+```
+
+#### Model Results
+```{r}
+
+summary(test)
+
+```
+
+#### P-values
+```{r}
+# perform z-test
+z <- summary(test)$coefficients/summary(test)$standard.errors
+# get the pvalues
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+
+kable(p)
+```
+
+#### BIC stepwise regression
+```{r}
+test_AIC<-stepAIC(test, direction="backward", k=log(26))
+summary(test_AIC)
+
+```
+
+### Genetic Statistics
+
+Next test effect of genetic summary statistics. 
+
+#### Model Results
+```{r message=FALSE, warning=FALSE}
+
+test2<-multinom(Migrate_Inference ~ Locus + PhiST + Tajimas_D + Haplotype_Diversity , data=species)
+
+summary(test2)
+```
+
+#### P-values
+
+```{r}
+#z test
+z2 <- summary(test2)$coefficients/summary(test2)$standard.errors
+
+#p values
+p2 <- (1 - pnorm(abs(z2), 0, 1)) * 2
+
+kable(p2)
+```
+
+#### BIC stepwise regression
+```{r}
+test2_AIC<-stepAIC(test2, direction="backward", k=log(26))
+summary(test2_AIC)
+
+```

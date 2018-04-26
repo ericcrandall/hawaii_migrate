@@ -1,0 +1,45 @@
+IBDsim built on Sep 14 2015 at 18:56:22.
+
+Random Seeds : 14071789
+nbr of simulated samples : 100 dataset(s) x 1 locus = 100
+generic data file name: stepstone_mtdna_
+Lattice with absorbing boundaries
+nbr of loci per sample file (n_locus): 1
+Postdisp Sample: nbr of sampled nodes (dim_sample1 X dim_sample2): 10 x 1
+Postdisp sample: nbr of sampled individuals per sampled node (IndPerPopSampled): 20
+Postdisp sample: x/y coordinate of "first" (bottom left) sampled node (xmin_sample/ymin_sample): 1/1
+
+==============
+Mutation model(s) (if multiple markers/loci have been specified, only the first locus of each marker is mentioned below):
+
+HKY85 Mutation rate (mu) is constant for this marker : 5e-05
+==============
+
+Demographic phase: 0
+At G=0 (sampling time ==  present) : 
+lattice dimensions are (LatticeSizeX * LatticeSizeY): 10 x 1
+Haploid individuals : nbr of genes per lattice node (1* IndsPerPop): 100000
+ContDemeSizeChange=Logistic
+ContLatticeSizeChange=Logistic
+
+
+Dispersal model: b
+Axial dispersal proba (TotalEmmigrationRate): 0.0001
+Stepping stone model 
+Bounds (dx_max,dy_max)=(1,0)
+Marginal dispersal distribution and checksum:
+0 0.9999 0.9999
+1 0.0001 1
+
+axial mean dispersal (within bounds): 0.0001
+axial sigma2 (within bounds): 0.0001
+axial kurtosis (within bounds): 9997
+
+If kurtosis appears wrong there may be many reasons
+   It may be because the dispersal distribution is not
+   computed with enough precision.
+
+D sigma2 (within bounds): 10
+Neighborhood  (within bounds): 20(1D) or 62.8319 (2D).
+expected slope (within bounds): 0.05(1D) or 0.0159155 (2D).
+

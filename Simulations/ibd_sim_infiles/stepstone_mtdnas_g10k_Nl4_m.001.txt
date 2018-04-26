@@ -1,0 +1,51 @@
+%%%%%%%%%% SIMULATION PARAMETERS %%%%%%%
+Data_File_Name = stepstone_mtdna
+GenePop_File_Extension = .gen
+Run_Number = 100
+Pause = Never
+Genepop = True
+Migrate = True
+Migraine_Settings = True
+Nexus_File_Format = Haplotypes_and_Individuals
+
+
+%%%%%%%%%% MARKERS PARAMETERS %%%%%%%%%
+Locus_Number = 1
+Mutation_Rate = 0.00005
+Mutation_Model = HKY85
+MRCA_Sequence = TACTCTATATATTATGTTTGGTGTGTGATCTGGTTTAGTCGGGACTGCTTTGAGGCTCTTGATTCGAGCTGAACTTGGACAGCCAGGAGCTCTTTTAGGTGATGATCAACTTTATAATGTGATCGTCACTGCGCATGCATTTGTGATAATTTTTTTCTTGGTGATGCCTATGATGATTGGGGGATTCGGTAATTGGTTGGTTCCTTTAATGTTGGGGGCTCCTGATATGGCGTTCCCGCGGTTGAATAATATAAGTTTTTGGTTGCTTCCGCCTTCGTTGACTTTGTTGCTTGCTTCTTCTGCTGTTGAGAGTGGTGTAGGGACAGGTTGAACGGTTTATCCTCCTTTGTCTGGGAACTTAGCTCATGCTGGGGGTTCTGTGGATCTAGCTATCTTCTCGTTACACTTAGCTGGTGTATCTTCTATTTTAGGTGCTGTAAATTTTATTACTACGATCATTAATATGCGGTGACAGGGGATGCAATTTGAGCGGTTGCCTC
+Sequence_Size = 500
+Transition_Transversion_ratio = 0.9
+Equilibrium_Frequencies = 0.2 0.3 0.2 0.3
+
+%%%%%%%%%% VARIOUS COMPUTATION OPTIONS %%%
+DiagnosticTables = Iterative_Identity_Probability, Hexp, Fis, Seq_stats, Prob_Id_Matrix, Effective_Dispersal, Iterative_Statistics, Allelic_Variance,
+
+%%%%%%%%%% DEMOGRAPHIC OPTIONS %%%%%%%%
+Ploidy = Haploid
+Lattice_Boundaries = Absorbing
+Total_Range_Dispersal = True
+Lattice_SizeX = 10
+Lattice_SizeY = 1
+Ind_Per_Pop = 10000
+Void_Nodes = 1
+Sample_SizeX = 10
+Sample_SizeY = 1
+Min_Sample_CoordinateX = 1
+Min_Sample_CoordinateY = 1
+Ind_Per_Pop_Sampled = 20
+Void_Sample_Node = 1
+Dispersal_Distribution = Stepping_Stone
+Immigration_Control = Simple_1D_Product
+Total_Emigration_Rate = 0.001
+Dist_max = 1
+Continuous_Deme_Size_Variation = Logistic
+Logistic_Growth_Rate = 0.3
+Continuous_Lattice_Size_Variation = Logistic
+Lattice_Logistic_Growth_Rate = 0.3
+
+
+% 1 DEMOGRAPHIC CHANGE
+New_Demographic_Phase_At = 10000
+Ind_Per_Pop = 1000
+Continuous_Deme_Size_Variation = None

@@ -1,0 +1,10 @@
+mv stepstone_mtdna_AllIndividuals_rep1.nex stepstone_mtdna_rep1.nex
+mv stepstone_mtdna_AllIndividuals_rep10.nex stepstone_mtdna_rep10.nex
+mv stepstone_mtdna_AllIndividuals_rep2.nex stepstone_mtdna_rep2.nex
+mv stepstone_mtdna_AllIndividuals_rep3.nex stepstone_mtdna_rep3.nex
+mv stepstone_mtdna_AllIndividuals_rep4.nex stepstone_mtdna_rep4.nex
+mv stepstone_mtdna_AllIndividuals_rep5.nex stepstone_mtdna_rep5.nex
+mv stepstone_mtdna_AllIndividuals_rep6.nex stepstone_mtdna_rep6.nex
+mv stepstone_mtdna_AllIndividuals_rep7.nex stepstone_mtdna_rep7.nex
+mv stepstone_mtdna_AllIndividuals_rep8.nex stepstone_mtdna_rep8.nex
+mv stepstone_mtdna_AllIndividuals_rep9.nex stepstone_mtdna_rep9.nex

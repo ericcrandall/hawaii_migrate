@@ -1,0 +1,124 @@
+---
+title: "Adegenet Analyses"
+author: "Eric Crandall"
+date: "September 9, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("hierfstat")
+library("adegenet")
+library("pegas")
+library("strataG")
+library("ggplot2")
+library("igraph")
+setwd("~/github/ibdsims/")
+```
+
+
+## Read in some of the simulated msat data and play with it.
+
+
+```{r, echo=FALSE}
+# see http://adegenet.r-forge.r-project.org/files/tutorial-basics.pdf
+
+msat<-read.genepop("./pareto2_msats/pareto2_1.gen",ncode=3L)
+print("overall FST")
+fstat(msat)
+print("locus-wise FST")
+Fst(as.loci(msat))
+print("pairwise FST")
+pfstmsat<-pairwise.fst(msat)
+pfstmsat
+
+print("PCA")
+#msatscaled<-scaleGen(msat)
+pca1 <- dudi.pca(msat,cent=FALSE,scale=TRUE,scannf=FALSE,nf=3)
+#barplot(pca1$eig[1:50],main="PCA eigenvalues", col=heat.colors(50))
+#s.label(pca1$li)
+#add.scatter.eig(pca1$eig[1:20], 3,1,2)
+#s.class(pca1$li, pop(msat))
+#add.scatter.eig(pca1$eig[1:20], 3,1,2)
+col<-funky(15)
+s.class(pca1$li, pop(msat),xax=1,yax=2, col=transp(col,.6), axesell=FALSE,
+        cstar=0, cpoint=3, grid=TRUE,include.origin=T,clabel=1,xlim=c(-10,10),ylim=c(-10,10))
+        
+        
+print("Isolation-By-Distance")
+msatpop<-genind2genpop(msat)
+
+#read in locations on the lattice
+latdists<-read.table("distances.txt")
+latdists<-dist(latdists)
+
+ibd<-mantel.randtest(pfstmsat,latdists)
+ibd
+plot(latdists, pfstmsat)
+abline(lm(pfstmsat~latdists))
+plot(ibd)
+        
+```
+
+```{r pcaplots, echo=FALSE}
+par(mfrow=c(2,5))
+for(m in list.files(path="./pareto2_msats", pattern=".gen")){
+msat<-read.genepop(file.path("./pareto2_msats",m),ncode=3L)
+pca1 <- dudi.pca(msat,cent=FALSE,scale=TRUE,scannf=FALSE,nf=3)
+col<-funky(15)
+s.class(pca1$li, pop(msat),xax=1,yax=2, col=transp(col,.6), axesell=FALSE,
+        cstar=0, cpoint=3, grid=TRUE,include.origin=T,clabel=1,xlim=c(-10,10),ylim=c(-10,10))
+}
+```
+
+```{r ibdplots, echo=FALSE}
+latdists<-read.table("distances.txt")
+latdists<-dist(latdists)
+par(mfrow=c(2,5))
+
+for(m in list.files(path="./pareto2_msats", pattern=".gen")){
+msat<-read.genepop(file.path("./pareto2_msats",m),ncode=3L)
+pfstmsat<-pairwise.fst(msat)
+
+ibd<-mantel.randtest(pfstmsat,latdists)
+plot(latdists, pfstmsat, xlab="", ylab="", las=1,main=paste("r =",round(ibd$obs,2),"p =",round(ibd$pvalue,2)))
+abline(lm(pfstmsat~latdists))
+}
+```
+
+
+```{r structure, echo=FALSE}
+for(m in list.files(path="./pareto2_msats", pattern=".gen")){
+msat<-read.genepop(file.path("./pareto2_msats",m),ncode=3L)
+popnames<-levels(pop(msat))
+msat<-genind2gtypes(msat)
+msat_struct<-structureRun(msat,k.range=c(1:15),noadmix=F, pop.prior="locprior",burnin=10000,numreps=20000,pops=popnames)
+evanno(msat_struct)
+structurePlot(msat_struct[[10]]$q.mat)
+
+
+```
+
+```{r map, echo=F}
+pops<-NULL
+for(p in 1:100){ pops<-c(pops,rep(p,2))}
+pops<-pops[-c(1,200)]
+popgraph<-graph(pops,directed=F)
+l1<-layout_on_grid(popgraph, width=100,height=1,dim=2)
+gcolors<-c("black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black","black","black","black","red","black","black","black","black","black","black")
+
+plot(popgraph, layout=l1,asp=0.1, vertex.size=1, vertex.label=NA,vertex.color=gcolors)
+
+empdisp<-read.table(file="EmpDisp_pareto2.txt",header=F,sep="\t")
+empdisp<-empdisp[50:150,]
+
+g<-ggplot(data=empdisp, aes(x=V1,y=V4))+
+  geom_point(aes(x=V1,y=rep(-0.01,101)),color=gcolors, size=3)+
+  geom_bar(stat="identity",color="blue")+geom_point(aes(x=0,y=-0.01),size=3,color="blue")+
+  labs(x="Deme #", y="Dispersal probability")+
+  geom_bar(aes(x=V1+5,y=V4),stat="identity",color="purple")+geom_point(aes(x=5,y=-0.01),size=3,color="purple")+
+  geom_bar(aes(x=V1+10,y=V4),stat="identity",color="violet")+geom_point(aes(x=10,y=-0.01),size=3,color="violet")
+
+g
+  
+```

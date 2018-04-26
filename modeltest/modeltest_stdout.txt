@@ -1,0 +1,129 @@
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Celexa_CI_Bird
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Celexa_CI_Bird.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Celsan_CI_Bird
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Celsan_CI_Bird.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Celtal_CI_Bird
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Celtal_CI_Bird.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Etemar_CB_andrews
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/Etemar_CB_andrews.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuabd_CB_coleman_newH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuabd_CB_coleman_newH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuabd_NS3_coleman_new
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuabd_NS3_coleman_new.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuvai_CB_coleman_newH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuvai_CB_coleman_newH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuvai_NS3_coleman_new
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/abuvai_NS3_coleman_new.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acanigF_CB_eble
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acanigF_CB_eble.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acanigR_CB_DiBattista_new
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acanigR_CB_DiBattista_new.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acaoli_CB_gaither
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acaoli_CB_gaither.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acapla_CR_timmers
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/acapla_CR_timmers.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon1_m9
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon1_m9.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon2_CI
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon2_CI.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon3_CI
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon3_CI.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon4_CI
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon4_CI.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon6_CB
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon6_CB.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon7_CB
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon7_CB.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon8_CI
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon8_CI.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon9_CR
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/anon9_CR.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/carign_ATP_Santos
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/carign_ATP_Santos.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/carmel_ATP_Santos
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/carmel_ATP_Santos.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chafre_CB_craig_newH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chafre_CB_craig_newH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chalun_CB_szabo
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chalun_CB_szabo.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chamil_CB_craigH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chamil_CB_craigH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chamul_CB_craigH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/chamul_CB_craigH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/ctestr_CB_eble
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/ctestr_CB_eble.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/dasalb_CR_Bernardi_Ramon
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/dasalb_CR_Bernardi_Ramon.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/epique_CR_Andrews
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/epique_CR_Andrews.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/hetmam_CI_bollick
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/hetmam_CI_bollick.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/holatr_CI_SkillingsH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/holatr_CI_SkillingsH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/holwhi_CI_SkillingsH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/holwhi_CI_SkillingsH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/lutkas_CR_gaither
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/lutkas_CR_gaither.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/myrber_CB_CraigH
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/myrber_CB_CraigH.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/panmar_CI_Iacchei
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/panmar_CI_Iacchei.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/panpen_CI_Iacchei
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/panpen_CI_Iacchei.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/parmul_CB_szabo
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/parmul_CB_szabo.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/prifil_CB_gaither
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/prifil_CB_gaither.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/squmit_CR_dalyengel
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/squmit_CR_dalyengel.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/stefas_CR_Ramon
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/stefas_CR_Ramon.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/stelon_CR_Andrews
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/stelon_CR_Andrews.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/triobe_CR_Whitney
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/triobe_CR_Whitney.nex
+
+making directory /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/zebfla_CB_Eble_nolump
+running modeltest on /Users/eric.crandall/Dropbox/Crandall_tobo/Nexus_files/zebfla_CB_Eble_nolump.nex
+

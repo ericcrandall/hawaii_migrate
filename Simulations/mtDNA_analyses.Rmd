@@ -1,0 +1,340 @@
+---
+title: "mtDNA analyses"
+author: "Eric Crandall"
+date: "September 9, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("hierfstat")
+library("adegenet")
+library("pegas")
+library("ape")
+library("strataG")
+library("ggplot2")
+library("gridExtra")
+```
+
+## Loading simulated mtDNA data and making a haplotype network
+
+```{r, echo=F}
+#https://arundurvasula.wordpress.com/2016/02/24/haplotype-networks-in-r/
+
+c <- ape::read.nexus.data("./stepstone_mtdnas_g10k_Nl6_m.0001/stepstone_mtdna_AllIndividuals_rep1.nex")
+d <- as.DNAbin(c)
+e <- dist.dna(d)
+h <- pegas::haplotype(d)
+h <- sort(h, what = "label")
+pop<-c(1,rep(1,20), rep(2,20), rep(3,20), rep(4,20), rep(5,20), rep(6,20), rep(7,20), rep(8,20), rep(9,20), rep(10,20))
+#pop<-c(1,rep(5,20), rep(15,20), rep(25,20), rep(35,20), rep(45,20), rep(55,20), rep(65,20), rep(75,20), rep(85,20), rep(95,20))
+net <- pegas::haploNet(h)
+i<-stack(setNames(attr(h, "index"), rownames(h)))
+ind.hap<- table(hap=i$ind, pop=pop)
+test<-graph_from_data_frame(net[,],directed=F)
+plot(test)
+#plot(net, size=attr(net, "freq"), scale.ratio=0.2, pie=ind.hap,legend=F, labels=F)
+#legend("topleft", colnames(ind.hap), col=rainbow(ncol(ind.hap)), pch=19, ncol=2)
+```
+
+# Converting between data types
+
+Here I want to convert from DNAbin2 to genind format, and then from genind format to gtypes. I am chopping off the ancestral sequence that is included by ibdsim by indexing just the 2nd to 201st rows.
+```{r convert, echo=F}
+#This comment won't show up.
+g<-DNAbin2genind(d[2:201],pop=pop[-1])
+gt<-sequence2gtypes(d[2:201],strata=pop[-1])
+```
+
+```{r analyze}
+pwtest<-pairwiseTest(gt)
+statPhist(gt,nrep = 100)
+fusFs(gt[,,1])
+
+#read in locations on the lattice
+latdists<-read.table("distances.txt")
+latdists<-dist(latdists)
+
+phist_mtdna<-as.dist(pwtest$pair.mat$PHIst)
+ibd<-mantel.randtest(phist_mtdna,latdists)
+plot(latdists, phist_mtdna)
+abline(lm(phist_mtdna~latdists))
+```
+
+# IBD Loop
+This is for looping through the simulated output files.
+```{r ibdloop, echo=F}
+
+
+pop<-c(1,rep(1,20), rep(2,20), rep(3,20), rep(4,20), rep(5,20), rep(6,20), rep(7,20), rep(8,20), rep(9,20), rep(10,20))
+
+latdists<-cbind(c(1:10),c(rep(1,10)))
+latdists<-dist(latdists)
+plots<-list()
+fits<-list()
+ibds<-list()
+
+for(m in list.files(path="./stepstone_mtdnas_g10k_Nl4_m.001",pattern="AllIndividuals_rep[0-9]+.nex"))
+  {
+  
+  #read in data and convert to gtypes
+  nexus <- ape::read.nexus.data(paste("./stepstone_mtdnas_g10k_Nl4_m.001/",m,sep=""))
+  dna <- as.DNAbin(nexus)
+  gt<-sequence2gtypes(dna[2:201],strata=pop[-1])
+  
+  pwtest<-pairwiseTest(gt,nrep = 0, stats="phist",quietly=T) # calculate pairwise Phist
+  phist_mtdna<-as.dist(pwtest$pair.mat$PHIst) #grab the Phist table
+  phist_mtdna[which(is.na(phist_mtdna))]<-0 #set any NAs (due to identical hap freqs) in the table to zero
+  ibd<-mantel.randtest(phist_mtdna,latdists) # calculate Mantel test
+  fit<-lm(as.vector(phist_mtdna)~as.vector(latdists))
+  
+  print(m)
+  mdl<-fit$model # have to write the model to another object so that ggplot will save the points within the graphic object (grob). Otherwise it will always use the last data in the loop to fill in the data for aesthetics.
+  
+  pl<-ggplot(mdl, aes_string(x = mdl[[2]], y = mdl[[1]])) + 
+      geom_point() + 
+      ggtitle(paste("r =",round(ibd$obs,2),"p =",round(ibd$pvalue,2)))+
+      stat_smooth(method = "lm", col = "red") +
+      geom_abline(slope=0,intercept=0, size=1) +
+      theme(axis.title.x=element_blank(),axis.title.y=element_blank(),
+            axis.text.x=element_blank()) +
+      ylim(-0.05,0.7)
+
+  plots[[m]]<-pl
+#  fits[[m]]<-fit
+#  ibds[[m]]<-ibd
+  
+  
+#  pl = ggplotRegression2(fit, title=paste("r =",round(ibd$obs,2),"p =",round(ibd$pvalue,2)))
+#   assign(m,pl)
+  
+  #  plot(latdists, phist_mtdna, xlab="", ylab="", las=1,main=paste("r =",round(ibd$obs,2),"p =",round(ibd$pvalue,2)))
+#  abline(lm(phist_mtdna~latdists))
+
+}
+
+
+grid.arrange(grobs=plots,ncol=3,nrow=3)
+  
+argg<-arrangeGrob(grobs=plots,ncol=3,nrow=3)  
+ggsave("stepstone_mtdnas_g10k_Nl4_m.1.pdf",argg)
+
+ pl<-ggplotRegression2(fit, title=paste("r =",round(ibd$obs,2),"p =",round(ibd$pvalue,2)))
+```
+
+```{r ibdloop2}
+ibds<-list()
+slopes<-NULL
+sigmas<-NULL
+
+logne<-4
+mig<-0.1
+
+wd<-"./stepstone_mtdnas_g10k_Nl4_m.1/"
+for(m in list.files(path=wd,pattern="AllIndividuals_rep[0-9]+.nex"))
+  {
+  print(m)
+  #read in data and convert to gtypes
+  nexus <- ape::read.nexus.data(paste(wd,m,sep=""))
+  dna <- as.DNAbin(nexus)
+  gt<-sequence2gtypes(dna[2:201],strata=pop[-1])
+  
+  pwtest<-pairwiseTest(gt,nrep = 0, stats="phist",quietly=T) # calculate pairwise Phist
+  phist_mtdna<-as.dist(pwtest$pair.mat$PHIst) #grab the Phist table
+  #phist_mtdna<-(phist_mtdna)/(1-phist_mtdna) #linearize it
+  phist_mtdna[which(is.na(phist_mtdna))]<-0 #set any NAs (due to identical hap freqs) in the table to zero
+  phist_mtdna<-(phist_mtdna)/(1-phist_mtdna) #linearize it
+  
+  ibd<-mantel.randtest(phist_mtdna,latdists) # calculate Mantel test
+  slope<-summary(lm(phist_mtdna~latdists))$coefficients[2,1]
+  sigma<-sqrt(1/(4*10^logne*0.006)) #sigma of Rousset 1997
+  ibds[[m]]<-ibd
+  slopes[[m]]<-slope
+  sigmas[[m]]<-sigma
+  }
+
+mantelRs<-sapply(ibds,function(x) x$obs)
+names(mantelRs)<-NULL
+
+pvalues<-sapply(ibds,function(x) x$pvalue)
+names(pvalues)<-NULL
+
+mantelout<-as.data.frame(cbind(mantelRs,pvalues))
+mantelout$p.value<-mantelout$pvalues<=0.05
+sigp<-length(which(mantelout$p.value))/100
+greaterthan0<-length(which(mantelout$mantelRs>0))/100
+
+mantelhist<-ggplot(data=mantelout, aes(x=mantelRs,fill=p.value)) + geom_histogram(binwidth=0.05) + geom_vline(xintercept=0,color="red") + scale_fill_manual(values=c("grey50","red")) + theme(legend.position="none",axis.title.x=element_blank(),axis.title.y=element_blank())+
+  ggtitle(paste("Mantel's R. Proportion significant = ",sigp,", Proportion > 0 = ",greaterthan0,sep=""))
+
+ggsave("mantelhist_stepstone_linearized_g10k_Nl4_m0.1.pdf",mantelhist)
+
+```
+
+   
+   
+```{r ibdloop3-Theta}
+
+ibds<-list()
+slopes<-NULL
+sigmas<-NULL
+logne<-6
+mig<-0.00001
+wd<-"./singlepop_mtdna_g10k/"
+
+for(m in list.files(path=wd,pattern="*gen")) {
+  print(m)
+  #read in data and convert to gtypes
+  gen<-read.genepop(paste(wd,m,sep=""),ncode = 3,quiet=T)
+  
+  gt<-genind2gtypes(gen)
+  
+  pwtest<-pairwiseTest(gt,nrep = 0, stats="fst",quietly=T) # calculate pairwise theta
+  theta<-as.dist(pwtest$pair.mat$Fst) #grab the Fst table
+  theta[which(is.na(theta))]<-0 #set any NAs (due to identical hap freqs) in the table to zero
+  theta<-(theta/(1-theta))
+  slope<-summary(lm(theta~latdists))$coefficients[2,1]
+  sigma<-sqrt(1/(4*10^logne*slope)) #sigma of Rousset 1997
+  ibd<-mantel.randtest(theta,latdists) # calculate Mantel test
+  
+  ibds[[m]]<-ibd
+  slopes[[m]]<-slope
+  sigmas[[m]]<-sigma
+  }
+
+mantelRs<-sapply(ibds,function(x) x$obs)
+names(mantelRs)<-NULL
+
+pvalues<-sapply(ibds,function(x) x$pvalue)
+names(pvalues)<-NULL
+
+mantelout<-as.data.frame(cbind(mantelRs,slopes,sigmas,pvalues))
+mantelout$p.value<-mantelout$pvalues<=0.05
+sigp<-length(which(mantelout$p.value))/100
+Rgreaterthan0<-length(which(mantelout$mantelRs>0))/100
+slopegreaterthan0<-length(which(mantelout$slopes>0))/100
+
+mantelhist<-ggplot(data=mantelout, aes(x=mantelRs,fill=p.value)) + geom_histogram(binwidth=0.05) + geom_vline(xintercept=0,color="red") + scale_fill_manual(values=c("grey50","red")) + theme(legend.position="none",axis.title.x=element_blank(),axis.title.y=element_blank())+
+  ggtitle(paste("Mantel's R. Proportion significant = ",sigp,", Proportion > 0 = ",Rgreaterthan0,sep=""))
+
+ggsave("mantelhist_stepstoneFST_g10k_Nl6_m0.00001.pdf",mantelhist)
+
+slopehist<-mantelhist<-ggplot(data=mantelout, aes(x=slopes,fill=p.value)) + geom_histogram() + geom_vline(xintercept=0,color="red") + scale_fill_manual(values=c("grey50","red")) + theme(legend.position="none",axis.title.x=element_blank(),axis.title.y=element_blank())+
+  ggtitle(paste("Slopes. Proportion significant = ",sigp,", Proportion > 0 = ",slopegreaterthan0,sep=""))
+
+ggsave("slopehist_stepstone2FST_g10k_Nl6_m0.00001.pdf",slopehist)
+
+outs<-c(paste("Ne=",10^logne,"; m=",mig,sep=""),"Theta",sigp,Rgreaterthan0,slopegreaterthan0,mean(sigmas,na.rm=T))
+
+outputs<-rbind(outputs,outs)
+
+sigmahist<-mantelhist<-ggplot(data=mantelout, aes(x=sigmas,fill=p.value)) + geom_histogram() + geom_vline(xintercept=0,color="red") + scale_fill_manual(values=c("grey50","red")) + theme(legend.position="none",axis.title.x=element_blank(),axis.title.y=element_blank())+
+  ggtitle(paste("Sigmas. Proportion significant = ",sigp,sep=""))
+
+
+
+
+
+
+outs<-list(mantelhist,slopehist)
+
+grid.arrange(grobs=outs,ncol=1,nrow=3)
+
+ggsave("mantelhist_zeta2FST_g10k_Nl4_m.01.pdf",mantelhist)
+
+```
+
+```{r ibdloop phist2}
+ibds<-list()
+slopes<-NULL
+sigmas<-NULL
+logne<-6
+mig<-0.00001
+wd<-"./singlepop_mtdna_g10k/"
+
+for(m in list.files(path=wd,pattern="AllIndividuals_rep[0-9]+.nex")) {
+  print(m)
+  #read in data and convert to gtypes
+ nexus <- ape::read.nexus.data(paste(wd,m,sep=""))
+  dna <- as.DNAbin(nexus)
+  gt<-sequence2gtypes(dna[2:201],strata=pop[-1])
+  
+  pwtest<-pairwiseTest(gt,nrep = 0, stats="phist",quietly=T) # calculate pairwise theta
+  theta<-as.dist(pwtest$pair.mat$PHIst) #grab the Fst table
+  theta[which(is.na(theta))]<-0 #set any NAs (due to identical hap freqs) in the table to zero
+   # #set any infinite (due to nonoverlapping hap freqs) in the table to zero
+  theta<-(theta/(1-theta))
+  theta[which(is.infinite(theta))]<-1
+  slope<-summary(lm(theta~latdists))$coefficients[2,1]
+  sigma<-sqrt(1/(4*10^logne*slope)) #sigma of Rousset 1997
+  ibd<-mantel.randtest(theta,latdists) # calculate Mantel test
+  
+  ibds[[m]]<-ibd
+  slopes[[m]]<-slope
+  sigmas[[m]]<-sigma
+  }
+
+mantelRs<-sapply(ibds,function(x) x$obs)
+names(mantelRs)<-NULL
+
+pvalues<-sapply(ibds,function(x) x$pvalue)
+names(pvalues)<-NULL
+
+mantelout<-as.data.frame(cbind(mantelRs,slopes,sigmas,pvalues))
+mantelout$p.value<-mantelout$pvalues<=0.05
+sigp<-length(which(mantelout$p.value))/100
+Rgreaterthan0<-length(which(mantelout$mantelRs>0))/100
+slopegreaterthan0<-length(which(mantelout$slopes>0))/100
+
+mantelhist<-ggplot(data=mantelout, aes(x=mantelRs,fill=p.value)) + geom_histogram(binwidth=0.05) + geom_vline(xintercept=0,color="red") + scale_fill_manual(values=c("grey50","red")) + theme(legend.position="none",axis.title.x=element_blank(),axis.title.y=element_blank())+
+  ggtitle(paste("Mantel's R. Proportion significant = ",sigp,", Proportion > 0 = ",Rgreaterthan0,sep=""))
+
+ggsave("mantelhist_stepstonePHIST_g10k_Nl6_m0.00001.pdf",mantelhist)
+
+slopehist<-mantelhist<-ggplot(data=mantelout, aes(x=slopes,fill=p.value)) + geom_histogram() + geom_vline(xintercept=0,color="red") + scale_fill_manual(values=c("grey50","red")) + theme(legend.position="none",axis.title.x=element_blank(),axis.title.y=element_blank())+
+  ggtitle(paste("Slopes. Proportion significant = ",sigp,", Proportion > 0 = ",slopegreaterthan0,sep=""))
+
+ggsave("slopehist_stepstonePHIST_g10k_Nl6_m0.00001.pdf",slopehist)
+
+outs<-c(paste("Ne=",10^logne,"; m=",mig,sep=""),"PHIst",sigp,Rgreaterthan0,slopegreaterthan0,mean(sigmas,na.rm=T))
+
+outputs<-rbind(outputs,outs)
+```
+
+```{r plot fsts}
+library(reshape2)
+fsts<-read.csv("modelFstouts.csv")
+names(fsts)<-c("outs","Model","Statistic","Proportion_Significant","R_greater_than_0","slope_greater_than_0","mean_sigma")
+levels(fsts$Model)<-gsub(";","\n",levels(fsts$Model))
+fsts$Model<-factor(fsts$Model, levels=c("Ne=10,000\n m=0.001","Ne=100,000\n m=0.0001","Ne=1,000,000\n m=0.00001","Ne=10,000\n m=0.01","Ne=100,000\n m=0.001","Ne=1,000,000\n m=0.0001","Ne=10,000\n m=0.1","Ne=100,000\n m=0.01","Ne=1,000,000\n m=0.001","Ne=1,000,000\n Panmixia"))
+
+#levels(fsts$Model)[1]<-"Ne=10,000\n m=0.001"
+#levels(fsts$Model)[2]<-"Ne=100,000\n m=0.0001"
+#levels(fsts$Model)[3]<-"Ne=1,000,000\n m=0.00001"
+#levels(fsts$Model)[4]<-"Ne=10,000\n m=0.01"
+#levels(fsts$Model)[5]<-"Ne=100,000\n m=0.001"
+#levels(fsts$Model)[6]<-"Ne=1,000,000\n m=0.0001"
+#levels(fsts$Model)[7]<-"Ne=10,000\n m=0.1"
+#levels(fsts$Model)[8]<-"Ne=100,000\n m=0.01"
+#levels(fsts$Model)[9]<-"Ne=1,000,000\n m=0.001"
+#levels(fsts$Model)[10]<-"Ne=1,000,000;\n Panmixia"
+
+
+g<-ggplot(data=fsts,mapping=aes(y=Proportion_Significant,x=Model,fill=Statistic)) + geom_bar(stat="identity",position="dodge")
+
+legtheme<-theme(axis.text = element_text(size = 14),
+                 axis.title = element_text(size = 16),
+                 legend.text = element_text(size = 18),
+                 legend.title = element_text(size = 18),
+                axis.title.x = element_blank(),axis.title.y=element_blank())
+
+h<-ggplot(data=fsts,mapping=aes(y=R_greater_than_0,x=Model,fill=Statistic)) + geom_bar(stat="identity",position="dodge")
+
+k<-ggplot(data=fsts,mapping=aes(y=Proportion_Significant,x=Model,fill=Statistic)) + geom_bar(stat="identity",position="dodge") + scale_fill_manual(values=c("grey","black"))
+
+
+phists<-fsts[fsts$Statistic=="PHIst",]
+g<-ggplot(data=phists,mapping=aes(y=Proportion_Significant,x=Model,fill=Statistic)) + geom_bar(stat="identity",position="dodge")
+
+```
+
