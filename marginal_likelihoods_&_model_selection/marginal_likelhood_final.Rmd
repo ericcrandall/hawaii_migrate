@@ -110,10 +110,12 @@ modeltables$round3$anon9_CR_blank<-NULL
 
 ## Plot marginal likelihood results from each of 3 runs
 ```{r}
+library("readxl")
 #plot model selection graphics (blue dots with lines) - lines denote confidence intervals
 m<-c("panmixia","hi_lo","1current","2currents","n.island","structure_panmixia","structure_currents","stepping.stone.1param","stepping.stone","empirical")
 m<-c("panmixia","hi_lo","1current","2currents","n.island","stepping.stone.1param","stepping.stone","empirical")
 
+speciesnames<-read.csv("Species_names.csv")
 
 pdf(file = "thermodynamic_marginal_likelihoods_final.pdf",width=8.5,height=3)
 means<-list()
@@ -122,6 +124,8 @@ for(dataset in names(modeltables[[1]])){
   likes<-rbind(cbind(modeltables[[1]][[dataset]],rep=1), cbind(modeltables[[2]][[dataset]],rep=2), cbind(modeltables[[3]][[dataset]], rep=3))
   likes$model<-factor(likes$model, m)
   likes<-likes[!(is.na(likes$model)),]
+  
+speciesname<-speciesnames$Species[which(speciesnames$Working=dataset)]
   
   #likes<-likes[which(likes$bezier.corrected > max(likes$bezier.corrected)-100),]
   y.mean<-as.vector(by(likes$bezier.corrected,likes$model,mean))
@@ -140,7 +144,7 @@ for(dataset in names(modeltables[[1]])){
   l<-l+geom_point(colour="blue", size=3)+
     geom_pointrange(data=likes.mean,y=y.mean,ymin=y.min,ymax=y.max, size=0.5)+
     scale_x_discrete(drop=FALSE)+
-    theme(axis.text.y = element_text(size=16),legend.position="none",axis.title.x=element_text(size=16),axis.title.y=element_blank(),plot.title=element_text(size=20))+ggtitle(dataset)+ylab("Marginal Log-Likelihood")+
+    theme(axis.text.y = element_text(size=16),legend.position="none",axis.title.x=element_text(size=16),axis.title.y=element_blank(),plot.title=element_text(size=20))+ggtitle(speciesname)+ylab("Marginal Log-Likelihood")+
     coord_fixed(0.1)+ coord_flip()
   print(l)
 #  plots<-c(plots,l)
