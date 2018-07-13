@@ -110,7 +110,7 @@ modeltables$round3$anon9_CR_blank<-NULL
 
 ## Plot marginal likelihood results from each of 3 runs
 ```{r}
-library("readxl")
+
 #plot model selection graphics (blue dots with lines) - lines denote confidence intervals
 m<-c("panmixia","hi_lo","1current","2currents","n.island","structure_panmixia","structure_currents","stepping.stone.1param","stepping.stone","empirical")
 m<-c("panmixia","hi_lo","1current","2currents","n.island","stepping.stone.1param","stepping.stone","empirical")
@@ -125,7 +125,7 @@ for(dataset in names(modeltables[[1]])){
   likes$model<-factor(likes$model, m)
   likes<-likes[!(is.na(likes$model)),]
   
-speciesname<-speciesnames$Species[which(speciesnames$Working=dataset)]
+speciesname<-speciesnames$Species[which(speciesnames$Working==dataset)]
   
   #likes<-likes[which(likes$bezier.corrected > max(likes$bezier.corrected)-100),]
   y.mean<-as.vector(by(likes$bezier.corrected,likes$model,mean))
