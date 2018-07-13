@@ -5,8 +5,13 @@ date: "September 9, 2016"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r "setup", include=FALSE}
+require("knitr")
+knitr::opts_knit$set(root.dir = "/Users/eric/github/hawaii_migrate/Simulations/ibd_sim_data/")
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
 library("hierfstat")
 library("adegenet")
 library("pegas")
@@ -52,7 +57,7 @@ statPhist(gt,nrep = 100)
 fusFs(gt[,,1])
 
 #read in locations on the lattice
-latdists<-read.table("distances.txt")
+latdists<-read.table("./Simulations/distances.txt")
 latdists<-dist(latdists)
 
 phist_mtdna<-as.dist(pwtest$pair.mat$PHIst)
@@ -338,3 +343,73 @@ g<-ggplot(data=phists,mapping=aes(y=Proportion_Significant,x=Model,fill=Statisti
 
 ```
 
+
+
+```{r variable sites}
+
+pops<-c(1,rep(1,20), rep(2,20), rep(3,20), rep(4,20), rep(5,20), rep(6,20), rep(7,20), rep(8,20), rep(9,20), rep(10,20))
+
+vsiteps<-NULL
+hapdivs<-NULL
+propuqs<-NULL
+meanprivs<-NULL
+
+wd<-"./stepstone_mtdnas_g10k_Nl6_m.001/"
+setwd(wd)
+
+
+for(m in list.files(path=wd,pattern="AllIndividuals_rep[0-9]+.nex")) {
+  print(m)
+  #read in data and convert to gtypes
+  nexus <- ape::read.nexus.data(paste(wd,m,sep=""))
+  dna <- as.DNAbin(nexus)
+  gt<-sequence2gtypes(dna[2:201],strata=pops[-1])
+  
+  vsites<-variableSites(gt)
+  vsitep<-dim(vsites$sites)[2]/500
+  vsiteps<-c(vsiteps,vsitep)
+  
+  gt<-labelHaplotypes(gt)
+  
+  #Haplotype diversity
+  hapdiv<-exptdHet(gt$gtypes)
+  hapdivs<-c(hapdivs,hapdiv)
+  
+  #Proportion of unique alleles
+  propuq<-propUniqueAlleles((gt$gtypes))
+  propuqs<-c(propuqs,propuq)
+  
+  #Mean Private Alleles
+  meanpriv<-mean(privateAlleles(gt$gtypes))
+  meanprivs<-c(meanprivs,meanpriv)
+  
+}
+
+
+#haplotype_diversity<-as.data.frame(hapdivs)
+#prop_unique_sites<-as.data.frame(propuqs)
+#mean_private_alleles<-as.data.frame(meanprivs)
+#names(prop_unique_sites)[6]<-"Ne100000_m0.01"
+
+
+#variablesites$Ne1000000_m0.00001<-vsiteps
+haplotype_diversity$Ne1000000_m0.001<-hapdivs
+prop_unique_sites$Ne1000000_m0.001<-propuqs
+mean_private_alleles$Ne1000000_m0.001<-meanprivs
+
+
+library(reshape2,ggplot2)
+#variablesites_melt<-melt(variablesites)
+haplotype_diversity_melt<-melt(haplotype_diversity)
+prop_unique_sites_melt<-melt(prop_unique_sites)
+mean_private_alleles_melt<-melt(mean_private_alleles)
+
+#ggplot(variablesites_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Proportion of Variable Sites")
+
+ggplot(haplotype_diversity_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Haplotype Diversity")
+
+ggplot(prop_unique_sites_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Proportion of Unique Sites")
+
+ggplot(mean_private_alleles_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Mean Private Alleles")
+
+```
