@@ -394,21 +394,21 @@ for(m in list.files(path=wd,pattern="AllIndividuals_rep[0-9]+.nex")) {
 
 #variablesites$Ne1000000_m0.00001<-vsiteps
 haplotype_diversity$Ne1000000_m0.001<-hapdivs
-prop_unique_sites$Ne1000000_m0.001<-propuqs
+prop_unique_alleles$Ne1000000_m0.001<-propuqs
 mean_private_alleles$Ne1000000_m0.001<-meanprivs
 
 
 library(reshape2,ggplot2)
 #variablesites_melt<-melt(variablesites)
 haplotype_diversity_melt<-melt(haplotype_diversity)
-prop_unique_sites_melt<-melt(prop_unique_sites)
+prop_unique_alleles_melt<-melt(prop_unique_alleles)
 mean_private_alleles_melt<-melt(mean_private_alleles)
 
 #ggplot(variablesites_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Proportion of Variable Sites")
 
 ggplot(haplotype_diversity_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Haplotype Diversity")
 
-ggplot(prop_unique_sites_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Proportion of Unique Sites")
+ggplot(prop_unique_alleles_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Proportion of Unique Alleles")
 
 ggplot(mean_private_alleles_melt,aes(x = variable,y=value)) + geom_boxplot() + theme(axis.text.x=element_text(angle=45, hjust=1), axis.title.x=element_blank()) + ylab("Mean Private Alleles")
 
